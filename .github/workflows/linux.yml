@@ -2,10 +2,6 @@
 
 name: Linux CI
 
-env:
-  MODULE_PREFIX: ${{github.workspace}}/third_party/module
-  BUILD_DIR: ${{ github.workspace }}/00.BUILD
-  CONAN: /home/runner/.local/bin/conan
 # Controls when the action will run.
 on:
   # Triggers the workflow on push or pull request events but only for the master branch
@@ -24,19 +20,31 @@ on:
 jobs:
   # This workflow contains a single job called "build"
   build:
-    # The type of runner that the job will run on
-    runs-on: ubuntu-20.04
     strategy:
       matrix:
+        os: [ubuntu-20.04, ubuntu-18.04]
         build_type: [Debug, Release]
+        cxx: [g++-8, g++-9, g++-10, clang++-10]
+        cxxstd: [20]
+
+    # The type of runner that the job will run on
+    runs-on: ${{ matrix.os }}
+    env:
+      MODULE_PREFIX: ${{github.workspace}}/third_party/module
+      CXX: ${{ matrix.cxx }}
+      BUILD_DIR: ${{ github.workspace }}/00.BUILD
+      CONAN: /home/runner/.local/bin/conan
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
 
-      - name: Install ninja-build
-        uses: seanmiddleditch/gha-setup-ninja@v3
+      - name: Setup packages
+        run: |
+          sudo apt-get update -q -y > /dev/null
+          sudo apt-get -q -y build-essential ninja-build cmake
+          sudo apt-get -q -y ${{ matrix.cxx }}
 
       - name: Install conan
         run: |
@@ -52,7 +60,10 @@ jobs:
       - name: Configure
         run: |
           cmake --version
-          cmake -S $GITHUB_WORKSPACE -B $BUILD_DIR -G Ninja
+          cmake -S $GITHUB_WORKSPACE -B $BUILD_DIR -G Ninja \
+            -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
+            -DCMAKE_INSTALL_PREFIX=$MODULE_PREFIX \
+            -DCMAKE_CXX_STANDARD=${{ matrix.cxxstd }}
 
       - name: Build
         run: |
