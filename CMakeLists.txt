@@ -92,6 +92,7 @@ endif ()
 
 
 if (ROOT_PROJECT)
+    enable_testing()
     add_subdirectory(test)
     add_subdirectory(bench)
 else()
