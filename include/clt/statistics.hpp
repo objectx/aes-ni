@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cmath>
+#include <climits>
 #include <vector>
 #include <tuple>
 
