@@ -43,8 +43,8 @@ jobs:
       - name: Setup packages
         run: |
           sudo apt-get update -q -y > /dev/null
-          sudo apt-get -q -y build-essential ninja-build cmake
-          sudo apt-get -q -y ${{ matrix.cxx }}
+          sudo apt-get install -q -y build-essential ninja-build cmake
+          sudo apt-get install -q -y ${{ matrix.cxx }}
 
       - name: Install conan
         run: |
