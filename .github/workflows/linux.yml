@@ -24,7 +24,7 @@ jobs:
       matrix:
         os: [ubuntu-20.04, ubuntu-18.04]
         build_type: [Debug, Release]
-        cxx: [g++-8, g++-9, g++-10, clang++-10]
+        cxx: [g++-10, clang++-10]
         cxxstd: [20]
 
     # The type of runner that the job will run on
